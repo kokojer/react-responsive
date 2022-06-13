@@ -1,0 +1,45 @@
+{
+	"name": "@kokojer/react-responsive",
+	"version": "1.0.0",
+	"description": "",
+	"type": "module",
+	"source": "src/MediaQuery.tsx",
+	"main ": "dist/react-responsive.cjs",
+	"module": "dist/react-responsive.module.js",
+	"unpkg": "dist/react-responsive.umd.js",
+	"exports": {
+		"require": "./dist/react-responsive.cjs",
+		"default": "./dist/react-responsive.modern.js"
+	},
+	"scripts": {
+		"build": "microbundle",
+		"dev": "microbundle watch",
+		"lint": "eslint --ext .ts,.tsx,.js src --fix"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/kokojer/react-responsive.git"
+	},
+	"homepage": "https://github.com/kokojer/react-responsive",
+	"types": "./dist/react-responsive.d.ts",
+	"keywords": [
+		"react",
+		"hook",
+		"responsive"
+	],
+	"author": "kokojer",
+	"license": "ISC",
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^5.27.1",
+		"eslint": "^8.17.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-prettier": "^4.0.0",
+		"eslint-plugin-react": "^7.30.0",
+		"eslint-plugin-react-hooks": "^4.5.0",
+		"microbundle": "^0.15.0",
+		"prettier": "^2.6.2"
+	},
+	"dependencies": {
+		"react": "^18"
+	}
+}
