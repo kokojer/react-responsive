@@ -1,5 +1,6 @@
 import React from "react";
 import { useMediaQuery } from "./hook";
+
 interface MediaFunctionsTypes {
     orientation?: "landscape" | "portrait";
     minResolution?: number | `${number}dppx`;
@@ -10,7 +11,7 @@ interface MediaFunctionsTypes {
     maxHeight?: number;
     children?: React.ReactNode | ((matches?: boolean) => React.ReactNode);
 }
-function MediaQuery(props: MediaFunctionsTypes) {
+export default function MediaQuery(props: MediaFunctionsTypes) {
     const orientation = useMediaQuery({
         query: props.orientation
             ? `(orientation: ${props.orientation})`
@@ -61,5 +62,3 @@ function MediaQuery(props: MediaFunctionsTypes) {
         allConditions && <>{props.children}</>
     );
 }
-
-export { MediaQuery as default, useMediaQuery };
