@@ -1,6 +1,6 @@
 {
 	"name": "@kokojer/react-responsive",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "",
 	"type": "module",
 	"source": "src/MediaQuery.tsx",
@@ -21,7 +21,7 @@
 		"url": "https://github.com/kokojer/react-responsive.git"
 	},
 	"homepage": "https://github.com/kokojer/react-responsive",
-	"types": "./dist/MediaQuery.d.ts",
+	"types": "./dist/index.d.ts",
 	"keywords": [
 		"react",
 		"hook",
