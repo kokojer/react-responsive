@@ -1,24 +1,17 @@
 import { useEffect, useState } from "react";
 
-type Query = { query: string | false };
+type Query = { query: string };
 
 export const useMediaQuery = ({ query }: Query): boolean => {
-    let matchMedia;
-    if (query) {
-        matchMedia = window.matchMedia(query);
-    }
-    const [isMatch, setIsMatch] = useState(query ? matchMedia.matches : true);
-
+    const matchMedia = window.matchMedia(query);
+    const [isMatch, setIsMatch] = useState(null);
     useEffect(() => {
-        if (!query) {
-            return;
-        }
-
-        const mediaCallback = (e) => {
+        setIsMatch(matchMedia.matches);
+        const mediaCallback = (e: MediaQueryListEvent) => {
             e.matches ? setIsMatch(true) : setIsMatch(false);
         };
         matchMedia.addEventListener("change", mediaCallback);
         return () => matchMedia.removeEventListener("change", mediaCallback);
-    }, []);
+    }, [query]);
     return isMatch;
 };

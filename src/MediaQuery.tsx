@@ -1,64 +1,63 @@
 import React from "react";
 import { useMediaQuery } from "./hook";
 
-interface MediaFunctionsTypes {
-    orientation?: "landscape" | "portrait";
-    minResolution?: number | `${number}dppx`;
-    maxResolution?: number | `${number}dppx`;
-    minWidth?: number;
-    maxWidth?: number;
-    minHeight?: number;
-    maxHeight?: number;
-    children?: React.ReactNode | ((matches?: boolean) => React.ReactNode);
+type MediaFunctionsTypes = {
+    children: React.ReactNode | ((matches: boolean) => React.ReactNode);
+} & (
+    | { orientation: "landscape" | "portrait" }
+    | { minResolution: number | `${number}dppx` }
+    | { maxResolution: number | `${number}dppx` }
+    | { minWidth: number }
+    | { maxWidth: number }
+    | { minHeight: number }
+    | { maxHeight: number }
+);
+
+function parsePropsKey(string: string) {
+    return string.replace(/(?<=[a-z])(?=[A-Z])/g, "-").toLowerCase();
 }
+
+function getUnit(key: string, value: any) {
+    if (/resolution/i.test(key)) {
+        if (typeof value === "number") {
+            return `${value}dppx`;
+        } else {
+            return value;
+        }
+    }
+    if (/width/i.test(key) || /height/i.test(key)) {
+        return `${value}px`;
+    }
+    return value;
+}
+
 export default function MediaQuery(props: MediaFunctionsTypes) {
-    const orientation = useMediaQuery({
-        query: props.orientation
-            ? `(orientation: ${props.orientation})`
-            : false,
-    });
-    const minResolution = useMediaQuery({
-        query: props.minResolution
-            ? `(min-resolution: ${
-                  typeof props.minResolution === "number"
-                      ? `${props.minResolution}dppx`
-                      : props.minResolution
-              })`
-            : false,
-    });
-    const maxResolution = useMediaQuery({
-        query: props.maxResolution
-            ? `(max-resolution: ${
-                  typeof props.maxResolution === "number"
-                      ? `${props.maxResolution}dppx`
-                      : props.maxResolution
-              })`
-            : false,
-    });
-    const minWidth = useMediaQuery({
-        query: props.minWidth ? `(min-width: ${props.minWidth}px)` : false,
-    });
-    const maxWidth = useMediaQuery({
-        query: props.maxWidth ? `(max-width: ${props.maxWidth}px)` : false,
-    });
-    const minHeight = useMediaQuery({
-        query: props.minHeight ? `(min-height: ${props.minHeight}px)` : false,
-    });
-    const maxHeight = useMediaQuery({
-        query: props.maxHeight ? `(max-height: ${props.maxHeight}px)` : false,
-    });
-    const allConditions =
-        orientation &&
-        minResolution &&
-        maxResolution &&
-        minWidth &&
-        maxWidth &&
-        minHeight &&
-        maxHeight;
+    const generatorMediaQuery = (): string => {
+        let mediaString = "";
+        const entries = Object.entries(props);
+        entries.forEach(([key, value]) => {
+            if (key !== "children") {
+                if (mediaString.length === 0) {
+                    mediaString = `(${parsePropsKey(key)}: ${getUnit(
+                        key,
+                        value
+                    )})`;
+                } else {
+                    mediaString += ` and (${parsePropsKey(key)}: ${getUnit(
+                        key,
+                        value
+                    )})`;
+                }
+            }
+        });
+        return mediaString;
+    };
+
+    const allConditions = useMediaQuery({ query: generatorMediaQuery() });
 
     return typeof props.children === "function" ? (
         <>{props.children(allConditions)}</>
-    ) : (
-        allConditions && <>{props.children}</>
-    );
+    ) : allConditions ? (
+        <>{props.children}</>
+    ) : null;
 }
