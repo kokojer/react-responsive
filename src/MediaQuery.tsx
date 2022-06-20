@@ -1,17 +1,27 @@
 import React from "react";
 import { useMediaQuery } from "./hook";
+type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
+    T,
+    Exclude<keyof T, Keys>
+> &
+    {
+        [K in Keys]-?: Required<Pick<T, K>> &
+            Partial<Pick<T, Exclude<Keys, K>>>;
+    }[Keys];
 
-type MediaFunctionsTypes = {
+interface MediaFunctionsTypes {
+    orientation: "landscape" | "portrait";
+    minResolution: number | `${number}dppx`;
+    maxResolution: number | `${number}dppx`;
+    minWidth: number;
+    maxWidth: number;
+    minHeight: number;
+    maxHeight: number;
+}
+
+type MediaQueryProps = RequireAtLeastOne<MediaFunctionsTypes> & {
     children: React.ReactNode | ((matches: boolean) => React.ReactNode);
-} & (
-    | { orientation: "landscape" | "portrait" }
-    | { minResolution: number | `${number}dppx` }
-    | { maxResolution: number | `${number}dppx` }
-    | { minWidth: number }
-    | { maxWidth: number }
-    | { minHeight: number }
-    | { maxHeight: number }
-);
+};
 
 function parsePropsKey(string: string) {
     return string.replace(/(?<=[a-z])(?=[A-Z])/g, "-").toLowerCase();
@@ -31,26 +41,28 @@ function getUnit(key: string, value: any) {
     return value;
 }
 
-export default function MediaQuery(props: MediaFunctionsTypes) {
+export default function MediaQuery(props: MediaQueryProps) {
     const generatorMediaQuery = (): string => {
-        let mediaString = "";
         const entries = Object.entries(props);
-        entries.forEach(([key, value]) => {
-            if (key !== "children") {
-                if (mediaString.length === 0) {
-                    mediaString = `(${parsePropsKey(key)}: ${getUnit(
-                        key,
-                        value
-                    )})`;
+        return entries
+            .map(([key, value], index) => {
+                if (key !== "children") {
+                    if (index === 0) {
+                        return `(${parsePropsKey(key)}: ${getUnit(
+                            key,
+                            value
+                        )})`;
+                    } else {
+                        return ` and (${parsePropsKey(key)}: ${getUnit(
+                            key,
+                            value
+                        )})`;
+                    }
                 } else {
-                    mediaString += ` and (${parsePropsKey(key)}: ${getUnit(
-                        key,
-                        value
-                    )})`;
+                    return "";
                 }
-            }
-        });
-        return mediaString;
+            })
+            .join("");
     };
 
     const allConditions = useMediaQuery({ query: generatorMediaQuery() });
